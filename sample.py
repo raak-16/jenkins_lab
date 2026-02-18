@@ -4,7 +4,7 @@ import streamlit as st
 st.title("Simple Calculator")
 
 # User Inputs
-num1 = st.number_input("Enter First Number", value=0.0)
+num1 = st.number_input("Enter Third Number", value=0.0)
 num2 = st.number_input("Enter Second Number", value=0.0)
 
 # Operation Selection
