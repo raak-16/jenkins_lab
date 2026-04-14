@@ -1,8 +1,11 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        PYTHON = 'py'   // Windows Launcher — try 'py' first; if that fails, use full path e.g. 'C:\\Python312\\python.exe'
+    }
 
+    stages {
         stage('Clone Repo') {
             steps {
                 git 'https://github.com/raak-16/jenkins_lab.git'
@@ -11,30 +14,27 @@ pipeline {
 
         stage('Setup Python') {
             steps {
-                bat '''
-                python --version
-                python -m venv venv
-                venv\\Scripts\\activate
-                pip install --upgrade pip
-                '''
+                bat """
+                    ${PYTHON} --version
+                    ${PYTHON} -m venv venv
+                    venv\\Scripts\\python.exe -m pip install --upgrade pip
+                """
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat '''
-                venv\\Scripts\\activate
-                pip install -r requirements.txt
-                '''
+                bat """
+                    venv\\Scripts\\pip.exe install -r requirements.txt
+                """
             }
         }
 
         stage('Deploy (Run App)') {
             steps {
-                bat '''
-                venv\\Scripts\\activate
-                start streamlit run app.py --server.port 8501
-                '''
+                bat """
+                    start /B venv\\Scripts\\streamlit.exe run app.py --server.port 8501
+                """
             }
         }
     }
