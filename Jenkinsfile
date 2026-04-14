@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = "streamlit-calculator"
-    }
-
     stages {
 
         stage('Clone Repo') {
@@ -15,10 +11,10 @@ pipeline {
 
         stage('Setup Python') {
             steps {
-                sh '''
-                python3 --version
-                python3 -m venv venv
-                . venv/bin/activate
+                bat '''
+                python --version
+                python -m venv venv
+                venv\\Scripts\\activate
                 pip install --upgrade pip
                 '''
             }
@@ -26,38 +22,20 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-                . venv/bin/activate
-                pip install streamlit
-                '''
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh '''
-                . venv/bin/activate
-                echo "No tests defined yet"
+                bat '''
+                venv\\Scripts\\activate
+                pip install -r requirements.txt
                 '''
             }
         }
 
         stage('Deploy (Run App)') {
             steps {
-                sh '''
-                . venv/bin/activate
-                nohup streamlit run app.py --server.port 8501 &
+                bat '''
+                venv\\Scripts\\activate
+                start streamlit run app.py --server.port 8501
                 '''
             }
-        }
-    }
-
-    post {
-        success {
-            echo "Pipeline executed successfully 🚀"
-        }
-        failure {
-            echo "Pipeline failed ❌"
         }
     }
 }
