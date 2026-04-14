@@ -11,17 +11,8 @@ pipeline {
         stage('Setup Python') {
             steps {
                 bat """
-                    @echo off
-                    for /f "delims=" %%i in ('where python 2^>nul') do (
-                        set PYTHON_EXE=%%i
-                        goto :found
-                    )
-                    echo ERROR: Python not found in PATH & exit /b 1
-
-                    :found
-                    echo Found Python at %PYTHON_EXE%
-                    "%PYTHON_EXE%" --version
-                    "%PYTHON_EXE%" -m venv venv
+                    python --version
+                    python -m venv venv
                     venv\\Scripts\\python.exe -m pip install --upgrade pip
                 """
             }
