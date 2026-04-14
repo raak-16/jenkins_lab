@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        PYTHON = 'py'   // Windows Launcher — try 'py' first; if that fails, use full path e.g. 'C:\\Python312\\python.exe'
-    }
-
     stages {
         stage('Clone Repo') {
             steps {
@@ -15,8 +11,17 @@ pipeline {
         stage('Setup Python') {
             steps {
                 bat """
-                    ${PYTHON} --version
-                    ${PYTHON} -m venv venv
+                    @echo off
+                    for /f "delims=" %%i in ('where python 2^>nul') do (
+                        set PYTHON_EXE=%%i
+                        goto :found
+                    )
+                    echo ERROR: Python not found in PATH & exit /b 1
+
+                    :found
+                    echo Found Python at %PYTHON_EXE%
+                    "%PYTHON_EXE%" --version
+                    "%PYTHON_EXE%" -m venv venv
                     venv\\Scripts\\python.exe -m pip install --upgrade pip
                 """
             }
@@ -24,17 +29,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat """
-                    venv\\Scripts\\pip.exe install -r requirements.txt
-                """
+                bat "venv\\Scripts\\pip.exe install -r requirements.txt"
             }
         }
 
         stage('Deploy (Run App)') {
             steps {
-                bat """
-                    start /B venv\\Scripts\\streamlit.exe run app.py --server.port 8501
-                """
+                bat 'start /B venv\\Scripts\\streamlit.exe run app.py --server.port 8501'
             }
         }
     }
