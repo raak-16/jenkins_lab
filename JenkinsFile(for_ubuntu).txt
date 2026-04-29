@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    stages {.t
+    stages {
         stage('Clone Repo') {
             steps {
                 git 'https://github.com/raak-16/jenkins_lab.git'
